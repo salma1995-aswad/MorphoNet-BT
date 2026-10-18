@@ -1,0 +1,183 @@
+phase: 12
+training_enabled: false
+requires_explicit_approval: true
+seed: 42
+variants:
+  A0:
+    use_mss: false
+    use_morphology_supervision: false
+    use_baa: false
+    use_dual_path: false
+    use_amgf: false
+  A1:
+    use_mss: true
+    use_morphology_supervision: false
+    use_baa: false
+    use_dual_path: false
+    use_amgf: false
+  A2:
+    use_mss: true
+    use_morphology_supervision: true
+    use_baa: false
+    use_dual_path: false
+    use_amgf: false
+  A3:
+    use_mss: true
+    use_morphology_supervision: true
+    use_baa: true
+    use_dual_path: false
+    use_amgf: false
+  A4:
+    use_mss: true
+    use_morphology_supervision: true
+    use_baa: true
+    use_dual_path: true
+    use_amgf: false
+  A5:
+    use_mss: true
+    use_morphology_supervision: true
+    use_baa: true
+    use_dual_path: true
+    use_amgf: true
+train_variants:
+- A0
+- A1
+- A2
+- A3
+- A4
+reuse_frozen_variants:
+- A5
+folds:
+- 1
+- 2
+- 3
+- 4
+- 5
+expected_new_runs: 25
+model:
+  name: MorphoNet-BT
+  input_channels: 1
+  num_classes: 3
+  dropout: 0.3
+  stem_channels: 32
+  stem_branch_channels: 16
+  stage_channels:
+  - 48
+  - 80
+  - 128
+  - 192
+  stage_blocks:
+  - 2
+  - 2
+  - 3
+  - 2
+  expansion_ratio: 2
+  channel_gate_reduction: 16
+  morphology_hidden_channels: 32
+  fusion_reduction: 8
+  use_mss: true
+  use_morphology_supervision: true
+  use_baa: true
+  use_dual_path: true
+  use_amgf: true
+preprocessing:
+  seed: 42
+  image_size: 256
+  normalization:
+    method: zscore
+    scope: per_image_all_pixels
+    epsilon: 1.0e-08
+    clipping: false
+  augmentation:
+    enabled: true
+    rotation_degrees: 10.0
+    translate: 0.02
+    scale:
+    - 0.95
+    - 1.05
+    geometry_probability: 0.8
+    gain_range:
+    - 0.95
+    - 1.05
+    gain_probability: 0.5
+    gaussian_noise:
+      std: 0.01
+      probability: 0.3
+      units: normalized_image
+    horizontal_flip: false
+    padding: constant_zero
+    max_geometry_attempts: 20
+    reject_tumor_clipping: true
+  morphology:
+    boundary_method: region_minus_erosion
+    kernel_size: 3
+    erosion_iterations: 1
+    distance_method: internal_euclidean
+    distance_normalization: per_mask_max
+    distance_padding: 1
+  label_mapping:
+    1:
+      class_name: Meningioma
+      class_index: 0
+    2:
+      class_name: Glioma
+      class_index: 1
+    3:
+      class_name: Pituitary
+      class_index: 2
+class_mapping:
+  0: Meningioma
+  1: Glioma
+  2: Pituitary
+training:
+  max_epochs: 100
+  batch_size: 32
+  num_workers: 2
+  persistent_workers: false
+  optimizer:
+    name: AdamW
+    learning_rate: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    name: CosineAnnealingLR
+    eta_min: 0.0
+    T_max: 100
+  early_stopping:
+    monitor: val_macro_f1
+    mode: max
+    patience: 15
+    min_delta: 0.0
+  amp: true
+  grad_scaler_init_scale: 1024.0
+  max_grad_norm: null
+  loss:
+    lambda_region: 1.0
+    lambda_boundary: 1.0
+    lambda_distance: 0.5
+    lambda_morphology: 0.3
+  class_weights: null
+a5_reference_checkpoints:
+- fold: 1
+  path: checkpoints/main/fold_1/best_macro_f1.pt
+  sha256: 32c4ba90baa60a3827a35f782827d51c56041929f4dc64bf07a6f27475b1b667
+  best_epoch: 60
+- fold: 2
+  path: checkpoints/main/fold_2/best_macro_f1.pt
+  sha256: 2a576ebd4f46c44f34b609d2eb87881f99f25cf602df8741ac12ceed136b17ca
+  best_epoch: 18
+- fold: 3
+  path: checkpoints/main/fold_3/best_macro_f1.pt
+  sha256: c1844a2ad5c37b66b4dab799bf98fef693deda60eb2b49c0fa8b88d0fe58b7a0
+  best_epoch: 22
+- fold: 4
+  path: checkpoints/main/fold_4/best_macro_f1.pt
+  sha256: 67545bbb19519ffa278bfab5bca687bbf3c3b604999a901d123a39709d0f9024
+  best_epoch: 55
+- fold: 5
+  path: checkpoints/main/fold_5/best_macro_f1.pt
+  sha256: c6e3542af54290f3a34cab77f28fafac9f77ec5aa6b0a21eec6a878e7ea93c98
+  best_epoch: 45
+target_policy: Masks may preserve frozen training augmentation; A0/A1 losses receive
+  labels only. No GT model inputs.
+training_start_policy: No training launcher in Phase 11. Require separately approved
+  Phase 12 implementation.

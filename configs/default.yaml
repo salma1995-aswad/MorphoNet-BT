@@ -1,0 +1,98 @@
+seed: 42
+image_size: 256
+normalization:
+  method: zscore
+  scope: per_image_all_pixels
+  epsilon: 1.0e-08
+  clipping: false
+augmentation:
+  enabled: true
+  rotation_degrees: 10.0
+  translate: 0.02
+  scale:
+  - 0.95
+  - 1.05
+  geometry_probability: 0.8
+  gain_range:
+  - 0.95
+  - 1.05
+  gain_probability: 0.5
+  gaussian_noise:
+    std: 0.01
+    probability: 0.3
+    units: normalized_image
+  horizontal_flip: false
+  padding: constant_zero
+  max_geometry_attempts: 20
+  reject_tumor_clipping: true
+morphology:
+  boundary_method: region_minus_erosion
+  kernel_size: 3
+  erosion_iterations: 1
+  distance_method: internal_euclidean
+  distance_normalization: per_mask_max
+  distance_padding: 1
+label_mapping:
+  1:
+    class_name: Meningioma
+    class_index: 0
+  2:
+    class_name: Glioma
+    class_index: 1
+  3:
+    class_name: Pituitary
+    class_index: 2
+
+model:
+  name: MorphoNet-BT
+  input_channels: 1
+  num_classes: 3
+  dropout: 0.3
+  stem_channels: 32
+  stem_branch_channels: 16
+  stage_channels:
+  - 48
+  - 80
+  - 128
+  - 192
+  stage_blocks:
+  - 2
+  - 2
+  - 3
+  - 2
+  expansion_ratio: 2
+  channel_gate_reduction: 16
+  morphology_hidden_channels: 32
+  fusion_reduction: 8
+  use_mss: true
+  use_morphology_supervision: true
+  use_baa: true
+  use_dual_path: true
+  use_amgf: true
+
+training:
+  max_epochs: 100
+  batch_size: 32
+  num_workers: 2
+  persistent_workers: false
+  optimizer:
+    name: AdamW
+    learning_rate: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    name: CosineAnnealingLR
+    eta_min: 0.0
+  early_stopping:
+    monitor: val_macro_f1
+    mode: max
+    patience: 15
+    min_delta: 0.0
+  amp: true
+  grad_scaler_init_scale: 1024.0
+  max_grad_norm: null
+  loss:
+    lambda_region: 1.0
+    lambda_boundary: 1.0
+    lambda_distance: 0.5
+    lambda_morphology: 0.3
+  class_weights: null

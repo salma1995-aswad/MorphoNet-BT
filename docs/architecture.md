@@ -1,0 +1,9 @@
+# Principal A4 architecture
+
+The authoritative implementation is [ablation.py](../src/models/ablation.py), built on [morphonet_bt.py](../src/models/morphonet_bt.py) and [blocks.py](../src/models/blocks.py). The five A4 flags are true, true, true, true, false in the order MSS, morphology supervision, BAA, dual path, AMGF. `build_ablation("A4")` applies these flags to the frozen structural settings. No model was instantiated during release preparation.
+
+The multi-scale stem and MFE stages feed an MRI-derived morphology head. Predicted boundary logits guide local attention; global/local features fuse as `0.5 * (global_features + local)`. A4 has no AMGF. Boundary prediction remains active at inference with BAA, while region and distance predictions are conditionally skipped when auxiliary outputs are not requested. Ground-truth masks supervise training and protect training augmentation from tumor clipping; they never enter the classification forward interface. Masks are also used as reference annotations in offline diagnostic evaluation, not as classifier inputs.
+
+[morphonet_bt_a4.yaml](../configs/morphonet_bt_a4.yaml) records the full model, preprocessing, class mapping and training settings derived from [ablation.yaml](../configs/ablation.yaml). It is documentation, not an implemented standalone configuration runner. [default.yaml](../configs/default.yaml) remains historical A5 with AMGF. Notebook 04 is not the principal A4 definition.
+
+The recorded 575,359 parameters include auxiliary predictors. The 275,711,872 MAC count covers Conv/Linear operations for classification and active predicted-boundary computation, excluding inactive auxiliary outputs and other operations. FLOPs = 2 MACs under this convention; it is not a complete hardware-operation or latency measurement. The verified diagram is available as [PNG](../results/figures/A4_architecture.png) and [PDF](../results/figures/A4_architecture.pdf).

@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Please cite this software using the metadata below. The associated manuscript is unpublished; do not cite it as an accepted article."
+title: "MorphoNet-BT: A Lightweight Morphology-Supervised Dual-Path Network for Brain Tumor Classification in Contrast-Enhanced MRI"
+type: software
+license: MIT
+abstract: "Research implementation and documentation for an exploratory patient-disjoint brain tumor classification study. Principal A4 uses fixed mean fusion. Manuscript unpublished; publication DOI unavailable."
+keywords:
+  - brain tumor classification
+  - contrast-enhanced MRI
+  - morphology supervision
+  - patient-disjoint cross-validation
+authors:
+  - family-names: Aswad
+    given-names: Salma
+    email: salma.abdullah@uod.ac
+    orcid: "https://orcid.org/0009-0007-2906-2001"
+    affiliation: "Computer Engineering, Erciyes University, Kayseri, Turkey; Department of Computer Science, College of Science, University of Duhok, Duhok 42001, Iraq"
+  - family-names: Ozturk
+    given-names: Serkan
+    email: Serkan@ergiyes.edu.tr
+    affiliation: "Computer Engineering, Erciyes University, Kayseri, Turkey"
+# Author order and emails supplied on 2026-10-15. Manuscript remains unpublished.

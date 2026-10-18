@@ -1,0 +1,53 @@
+phase: Baseline preparation only
+seed: 42
+models:
+- resnet18
+- resnet50
+- densenet121
+- mobilenet_v3_small
+- efficientnet_b0
+input_channels: 1
+num_classes: 3
+pretrained: false
+weights: null
+class_mapping:
+  0: Meningioma
+  1: Glioma
+  2: Pituitary
+data:
+  splits_directory: splits
+  regenerate_splits: false
+  preprocessing_config: results/architecture/preprocessing_v1_approved.yaml
+  dataset_class: src.baselines.data.MRIOnlyBaselineDataset
+  augmentation: Frozen Phase 3 policy
+  internal_training_mask_for_augmentation: true
+  mask_policy_approved_by_user: true
+  model_input: MRI only
+  validation_test_mode: Deterministic
+training:
+  enabled: false
+  requires_phase9_approval: true
+  max_epochs: 100
+  batch_size: 32
+  num_workers: 2
+  persistent_workers: false
+  optimizer:
+    name: AdamW
+    learning_rate: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    name: CosineAnnealingLR
+    T_max: 100
+    eta_min: 0.0
+  early_stopping:
+    monitor: val_macro_f1
+    mode: max
+    patience: 15
+    min_delta: 0.0
+  amp: true
+  grad_scaler_init_scale: 1024.0
+  max_grad_norm: null
+  loss:
+    name: CrossEntropyLoss
+    class_weights: null
+  checkpoint_selection: Highest validation macro-F1 only

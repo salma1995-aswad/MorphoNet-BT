@@ -1,0 +1,3 @@
+# Static inspection only; no torch, model execution or notebook execution.
+PyYAML==6.0.3
+nbformat==5.10.4

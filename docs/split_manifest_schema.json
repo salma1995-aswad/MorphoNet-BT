@@ -1,0 +1,45 @@
+{
+  "description": "Historical schema; no private rows supplied",
+  "required": [
+    "sample_id",
+    "source",
+    "member",
+    "PID",
+    "original_label",
+    "class_name",
+    "image_sha256",
+    "fold",
+    "split"
+  ],
+  "string_fields": [
+    "sample_id",
+    "source",
+    "member",
+    "PID",
+    "class_name",
+    "image_sha256"
+  ],
+  "original_label": [
+    1,
+    2,
+    3
+  ],
+  "fold": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "split": [
+    "train",
+    "val",
+    "test"
+  ],
+  "class_mapping": {
+    "1": "Meningioma",
+    "2": "Glioma",
+    "3": "Pituitary"
+  },
+  "validation": "Identity/label consistency, patient separation, complete sample coverage and original byte hashes; not validated on private rows in Phase18."
+}
